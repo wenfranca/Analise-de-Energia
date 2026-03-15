@@ -729,13 +729,21 @@ function updateChartReg(filtered, keys) {
   const borders = pcts.map(p=> p===0?'rgba(107,127,163,.5)': p>100?'rgba(255,82,82,1)':'rgba(0,212,170,1)');
   const ctx = document.getElementById('chartReg').getContext('2d');
   if (chartReg) chartReg.destroy();
+  const dlColors = pcts.map(p=> p===0?'rgba(107,127,163,.7)': p>100?'rgba(255,82,82,1)':'rgba(0,212,170,1)');
   chartReg = new Chart(ctx, {
     type:'bar',
-    data:{ labels, datasets:[{ label:'Resultado %', data:pcts, backgroundColor:colors, borderColor:borders, borderWidth:1.5, borderRadius:4, borderSkipped:false }] },
+    plugins:[ChartDataLabels],
+    data:{ labels, datasets:[{ label:'Resultado %', data:pcts, backgroundColor:colors, borderColor:borders, borderWidth:1.5, borderRadius:4, borderSkipped:false,
+      datalabels:{ anchor:'end', align:'end', color:dlColors, font:{size:11,weight:'bold'}, formatter: v=> v===0?'—':v.toFixed(1)+'%' } }] },
     options:{
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#111827', borderColor:'#1e2d45', borderWidth:1, titleColor:'#e8f0fe', bodyColor:'#6b7fa3',
-        callbacks:{ label: ctx=>' '+ctx.raw.toFixed(1)+'%' } } },
+      layout:{ padding:{ right:52 } },
+      plugins:{
+        legend:{display:false},
+        tooltip:{ backgroundColor:'#111827', borderColor:'#1e2d45', borderWidth:1, titleColor:'#e8f0fe', bodyColor:'#6b7fa3',
+          callbacks:{ label: ctx=>' '+ctx.raw.toFixed(1)+'%' } },
+        datalabels:{ display:true }
+      },
       scales:{
         x:{ grid:{color:'rgba(30,45,69,.4)'}, ticks:{color:'#6b7fa3',font:{size:11},callback:v=>Math.round(v)+'%'},
           max: Math.ceil((Math.max(110,...pcts)+5)/10)*10 },
